@@ -49,11 +49,12 @@ export class MercuryCompletionProvider
   }
 }
 
-/** Regexes used to match out various kinds of items. */
+// FIXME: pred & func should continue matching till the end of the decl, to provide better detail context.
+// Distinguishing end-of-decl . from module-namespace . is a bit tricky using just regexen. We might want to pull in a proper parser lib.
 export const matchers = () => [
   {
     name: "pred",
-    re: /:-\s*pred\s*(?<name>[^(]+)\(/g,
+    re: /:-\s*pred\s*(?<name>[^(]+)\([^.]*\./g,
     kind: vscode.CompletionItemKind.Method,
   },
   {
@@ -61,12 +62,19 @@ export const matchers = () => [
     re: /:-\s*func\s*(?<name>[^(=]+)\(/g,
     kind: vscode.CompletionItemKind.Function,
   },
+  // TODO: lambda preds & funcs
+  // TODO: local vars
+
   // decl, versus a use/import
   {
     name: "module_decl",
     re: /:-\s*module\s*(?<name>[^.]+)\(/g,
     kind: vscode.CompletionItemKind.Module,
   },
+  // TODO: use & import of modules, possibly multiple per line.
+
+  // TODO: type, constructors, and type instances.
+  // TODO: AFTER import chasing for the other decls: inst definitions, mode definitions
 ];
 
 export const matchToCompletion = (
